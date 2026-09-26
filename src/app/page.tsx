@@ -102,6 +102,11 @@ html { scroll-behavior: smooth; }
 /* ------------------------------ data ------------------------------ */
 
 const GITHUB_REPO = "https://github.com/marrionesa/animabooter"
+
+// Static export for GitHub Pages serves the site from /animabooter-website/.
+// next/image with unoptimized images does not apply basePath, so prefix here.
+const EXPORT_BASE_PATH =
+  process.env.NEXT_OUTPUT === "export" ? "/animabooter-website" : ""
 const RELEASE_URL = `${GITHUB_REPO}/releases/tag/v0.1.0`
 const RELEASES_URL = `${GITHUB_REPO}/releases`
 
@@ -495,7 +500,7 @@ function ScreenshotCard({
   return (
     <figure className="group overflow-hidden rounded-2xl border border-[#2a2e3f] bg-[#1a1d29] transition-colors duration-200 hover:border-[#8b5cf6]/50">
       <Image
-        src={src}
+        src={`${EXPORT_BASE_PATH}${src}`}
         alt={alt}
         title={title}
         width={1154}

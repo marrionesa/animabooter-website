@@ -13,6 +13,11 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+// Static export for GitHub Pages serves the site from /<repo>/; prefix the
+// absolute metadata URLs accordingly (basePath does not apply to them).
+const basePath =
+  process.env.NEXT_OUTPUT === "export" ? "/animabooter-website" : "";
+
 export const metadata: Metadata = {
   title: "AnimaBooter — Flash USB drives with soul",
   description:
@@ -29,13 +34,13 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "marrionesa" }],
   icons: {
-    icon: "/icon.png",
+    icon: `${basePath}/icon.png`,
   },
   openGraph: {
     title: "AnimaBooter — Flash USB drives with soul",
     description:
       "Open-source cross-platform USB image flasher with a parallel 3-stage pipeline and free verification hashing.",
-    url: "https://github.com/marrionesa/animabooter",
+    url: `https://marrionesa.github.io${basePath}/`,
     siteName: "AnimaBooter",
     type: "website",
   },
