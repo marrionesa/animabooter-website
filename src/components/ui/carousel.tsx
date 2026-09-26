@@ -1,5 +1,7 @@
 "use client"
 
+/* eslint-disable react-hooks/set-state-in-effect -- vendored shadcn/ui component (embla carousel wrapper) */
+
 import * as React from "react"
 import useEmblaCarousel, {
   type UseEmblaCarouselType,
