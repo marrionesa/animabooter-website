@@ -1,0 +1,96 @@
+# ============================================================
+# AnimaBooter Website
+# Git ignore
+# ============================================================
+
+# ---------- Dependencies ----------
+
+node_modules/
+.pnpm-store/
+.yarn/
+.yarn/cache/
+.yarn/unplugged/
+.yarn/build-state.yml
+.yarn/install-state.gz
+
+# ---------- Next.js ----------
+
+.next/
+out/
+
+# ---------- Build artifacts ----------
+
+dist/
+build/
+coverage/
+
+# ---------- Vercel ----------
+
+.vercel/
+
+# ---------- Turbo ----------
+
+.turbo/
+
+# ---------- Environment / secrets ----------
+
+dev.sh
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Keep an example environment file in Git.
+!.env.example
+
+# ---------- Logs ----------
+
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+bun-debug.log*
+
+# ---------- Temporary files ----------
+
+.tmp/
+.temp/
+.cache/
+
+# ---------- OS ----------
+
+.DS_Store
+.AppleDouble
+.LSOverride
+
+Thumbs.db
+Desktop.ini
+
+# ---------- Editors / IDE ----------
+
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+
+.vscode-test/
+
+.idea/
+*.iml
+
+# ---------- TypeScript ----------
+
+*.tsbuildinfo
+
+# ---------- ESLint ----------
+
+.eslintcache
+
+# ---------- Misc ----------
+
+*.swp
+*.swo
+*~
