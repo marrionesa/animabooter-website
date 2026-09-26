@@ -1,3 +1,4 @@
+import Image from "next/image"
 import {
   Apple,
   AppWindow,
@@ -100,16 +101,124 @@ html { scroll-behavior: smooth; }
 
 /* ------------------------------ data ------------------------------ */
 
+const GITHUB_REPO = "https://github.com/marrionesa/animabooter"
+const RELEASE_URL = `${GITHUB_REPO}/releases/tag/v0.1.0`
+const RELEASES_URL = `${GITHUB_REPO}/releases`
+
 const NAV_LINKS = [
   { href: "#pipeline", label: "Pipeline" },
   { href: "#features", label: "Features" },
+  { href: "#screenshots", label: "Screenshots" },
+  { href: "#download", label: "Download" },
   { href: "#compare", label: "Compare" },
-  { href: "#tree", label: "Tree" },
+  { href: "#verification", label: "Verification" },
   { href: "#roadmap", label: "Roadmap" },
   { href: "#build", label: "Build" },
 ]
 
-const HERO_BADGES = ["Rust", "Tauri 2", "Svelte 5", "Tailwind v4", "MIT"]
+const HERO_BADGES = ["v0.1.0", "Rust", "Tauri 2", "Svelte 5", "Tailwind v4", "MIT"]
+
+const DOWNLOAD_BUNDLES = [
+  {
+    os: "Windows",
+    icon: AppWindow,
+    files: [
+      {
+        label: "NSIS installer (x64)",
+        href: `${RELEASE_URL}/animabooter-windows_AnimaBooter_0.1.0_x64-setup.exe`,
+      },
+      {
+        label: "MSI installer (x64)",
+        href: `${RELEASE_URL}/animabooter-windows_AnimaBooter_0.1.0_x64_en-US.msi`,
+      },
+    ],
+  },
+  {
+    os: "macOS",
+    icon: Apple,
+    files: [
+      {
+        label: "Apple Silicon (aarch64)",
+        href: `${RELEASE_URL}/animabooter-macos_AnimaBooter_0.1.0_aarch64.dmg`,
+      },
+    ],
+  },
+  {
+    os: "Linux",
+    icon: Terminal,
+    files: [
+      {
+        label: "AppImage (amd64)",
+        href: `${RELEASE_URL}/animabooter-linux_AnimaBooter_0.1.0_amd64.AppImage`,
+      },
+      {
+        label: ".deb (amd64)",
+        href: `${RELEASE_URL}/animabooter-linux_AnimaBooter_0.1.0_amd64.deb`,
+      },
+      {
+        label: ".rpm (x86_64)",
+        href: `${RELEASE_URL}/animabooter-linux_AnimaBooter_0.1.0_x86_64.rpm`,
+      },
+    ],
+  },
+]
+
+const SCREENSHOTS_ROW_1 = [
+  {
+    src: "/screenshots/01-image.png",
+    alt: "Step 1 — drop a disk image on the mascot",
+    title: "1 · Image — drop an .iso / .img / compressed image",
+  },
+  {
+    src: "/screenshots/02-drive.png",
+    alt: "Step 2 — choose the target drive",
+    title: "2 · Drive — removable drives only, with serial + bus info",
+  },
+  {
+    src: "/screenshots/03-confirm.png",
+    alt: "Step 3 — destruction confirmation",
+    title: "3 · Confirm — everything that will be destroyed, in the open",
+  },
+]
+
+const SCREENSHOTS_ROW_2 = [
+  {
+    src: "/screenshots/04-writing.png",
+    alt: "Step 4 — writing with speed, peak and ETA",
+    title: "4 · Write — live speed, peak and ETA",
+  },
+  {
+    src: "/screenshots/05-log.png",
+    alt: "Step 4 — live log with every safety and pipeline step",
+    title: "Live log — every destructive step announces itself first",
+  },
+  {
+    src: "/screenshots/07-result.png",
+    alt: "Flash complete — result card with stats",
+    title: "Done — result card with avg/peak speed, duration, verification",
+  },
+]
+
+const VERIFICATION_ROWS = [
+  {
+    platform: "Linux",
+    ci: "fmt, clippy, tests, build",
+    hardware: "verified by the author on hardware (real flash, USB boots)",
+    tested: true,
+  },
+  {
+    platform: "Windows",
+    ci: "tests + bundle (MSVC)",
+    hardware: "not yet hardware-tested by the author",
+    tested: false,
+  },
+  {
+    platform: "macOS",
+    ci: "tests + bundle (aarch64)",
+    hardware: "not yet hardware-tested by the author",
+    tested: false,
+  },
+]
 
 const PIPELINE_STAGES = [
   {
@@ -158,13 +267,13 @@ const FEATURES = [
   },
   {
     icon: Gauge,
-    title: "Sub-10 MB installer, <0.5 s startup",
-    body: "A native Tauri 2 binary, not an Electron app. The installer target is under 10 MB with cold start under half a second.",
+    title: "Tiny native binary",
+    body: "A native Tauri 2 binary, not an Electron app. The install size target is under 10 MB — a fraction of what Electron-based flashers weigh.",
   },
   {
     icon: ImageDown,
-    title: "Shareable ResultCard",
-    body: "A neofetch-style summary card with one-click PNG export, rendered 100% locally on canvas. Copy the summary or share the image.",
+    title: "Compressed images, streamed",
+    body: "gzip, xz, zstd and bzip2 images are detected by magic bytes and decompressed on the fly — the image is never fully loaded into RAM.",
   },
   {
     icon: Palette,
@@ -179,7 +288,7 @@ const FEATURES = [
   {
     icon: Languages,
     title: "Bilingual EN / ES",
-    body: "The whole wizard speaks English and Spanish out of the box, auto-detected from your system settings on first launch.",
+    body: "The whole wizard speaks English and Spanish out of the box, with a reactive mascot that lives through every phase.",
   },
 ]
 
@@ -219,9 +328,10 @@ const TREE_LINES = [
   "animabooter/",
   "├── src-tauri/",
   "│   ├── src/",
-  "│   │   ├── commands/     list_drives · flash · cancel_flash · eject",
-  "│   │   ├── core/         pipeline · writer · verifier · progress · cancel_token",
-  "│   │   ├── image/        detect · decompress",
+  "│   │   ├── commands/     list_drives · detect_image · flash · cancel_flash",
+  "│   │   │                 eject · get_settings · set_settings · restart_as_admin",
+  "│   │   ├── core/         pipeline · reader · writer · verifier · progress",
+  "│   │   ├── image/        detect · streaming decompression (gzip/xz/zstd/bz2)",
   "│   │   ├── platform/     linux · macos · windows · unix_common",
   "│   │   └── error.rs  safety.rs  state.rs  lib.rs  main.rs",
   "│   ├── capabilities/     default.json",
@@ -231,13 +341,13 @@ const TREE_LINES = [
   "│   │                     ProgressView · ResultCard · Mascot",
   "│   ├── lib/              ipc · stores · types · format · i18n (en / es)",
   "│   └── App.svelte  main.ts  app.css",
-  "├── .github/workflows/    (empty — local-only, no CI)",
+  "├── .github/workflows/    ci.yml (manual) · release.yml (manual or v* tags)",
   "└── vite.config.ts  svelte.config.js  tsconfig.json  index.html",
 ]
 
 const STATS = [
-  { icon: Files, value: "50", label: "files" },
-  { icon: Code, value: "6,257", label: "lines of code" },
+  { icon: Files, value: "119", label: "files" },
+  { icon: Code, value: "6,378", label: "lines of code" },
   { icon: MonitorSmartphone, value: "3", label: "platforms" },
   { icon: Radio, value: "6", label: "flash:// event channels" },
   { icon: PlugZap, value: "8", label: "IPC commands" },
@@ -277,16 +387,16 @@ const ROADMAP = [
 ]
 
 const BUILD_LINES = [
-  { t: "#", s: "# 1 · obtain the source locally from the owner" },
-  { t: "c", s: "cd animabooter" },
-  { t: "c", s: "bun install && bun run check && bun run build" },
+  { t: "#", s: "# 1 · frontend: install, check, build (pnpm ≥ 9, or Bun / Node ≥ 18)" },
+  { t: "c", s: "pnpm install" },
+  { t: "c", s: "pnpm check && pnpm build" },
   { t: "", s: "" },
   { t: "#", s: "# 2 · backend: lint + tests" },
   { t: "c", s: "cd src-tauri" },
   { t: "c", s: "cargo clippy -- -D warnings && cargo test" },
   { t: "", s: "" },
   { t: "#", s: "# 3 · bundle the native desktop app" },
-  { t: "c", s: "cargo tauri build        # or: npm run tauri build" },
+  { t: "c", s: "cd .. && pnpm tauri build" },
 ]
 
 const UDEV_RULE = [
@@ -370,6 +480,30 @@ function MiniWisp({ className = "h-7 w-7" }: { className?: string }) {
       <circle cx="84" cy="91" r="3" fill="#e5e7eb" />
       <circle cx="122" cy="91" r="3" fill="#e5e7eb" />
     </svg>
+  )
+}
+
+function ScreenshotCard({
+  src,
+  alt,
+  title,
+}: {
+  src: string
+  alt: string
+  title: string
+}) {
+  return (
+    <figure className="group overflow-hidden rounded-2xl border border-[#2a2e3f] bg-[#1a1d29] transition-colors duration-200 hover:border-[#8b5cf6]/50">
+      <Image
+        src={src}
+        alt={alt}
+        title={title}
+        width={1154}
+        height={857}
+        className="h-auto w-full border-b border-[#2a2e3f] object-cover"
+      />
+      <figcaption className="px-4 py-3 text-xs leading-5 text-[#9ca3af]">{title}</figcaption>
+    </figure>
   )
 }
 
@@ -488,14 +622,14 @@ export default function Home() {
                 asChild
                 className="bg-[#8b5cf6] text-white hover:bg-[#7c3aed] focus-visible:ring-[#8b5cf6]/50"
               >
-                <a href="#pipeline">See the pipeline</a>
+                <a href="#download">Download v0.1.0</a>
               </Button>
               <Button
                 asChild
                 variant="outline"
                 className="border-[#2a2e3f] bg-transparent text-[#e5e7eb] hover:bg-[#232738] hover:text-[#e5e7eb] focus-visible:ring-[#8b5cf6]/50"
               >
-                <a href="#build">Build it yourself</a>
+                <a href="#pipeline">See the pipeline</a>
               </Button>
             </div>
 
@@ -623,6 +757,106 @@ export default function Home() {
           <Separator className="bg-[#2a2e3f]" />
         </div>
 
+        {/* ------------------------------------------- screenshots */}
+        <section id="screenshots" className="py-16 sm:py-20" aria-labelledby="screenshots-title">
+          <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
+            <SectionHeading kicker="Screenshots" title="The four-step wizard, for real">
+              <p>
+                Image → drive → confirm → write. Real captures from the v0.1.0 release — interface
+                in English and Spanish, three themes, reactive mascot included.
+              </p>
+            </SectionHeading>
+
+            <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {SCREENSHOTS_ROW_1.map((shot) => (
+                <ScreenshotCard key={shot.src} {...shot} />
+              ))}
+            </div>
+            <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {SCREENSHOTS_ROW_2.map((shot) => (
+                <ScreenshotCard key={shot.src} {...shot} />
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
+          <Separator className="bg-[#2a2e3f]" />
+        </div>
+
+        {/* --------------------------------------------- download */}
+        <section id="download" className="py-16 sm:py-20" aria-labelledby="download-title">
+          <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
+            <SectionHeading kicker="Download" title="Get the v0.1.0 release">
+              <p>
+                Grab a bundle from the official GitHub release — NSIS / MSI installer (Windows),{" "}
+                <span className="font-mono text-sm">.dmg</span> (macOS, aarch64) and{" "}
+                <span className="font-mono text-sm">.deb</span> / AppImage /{" "}
+                <span className="font-mono text-sm">.rpm</span> (Linux).
+              </p>
+            </SectionHeading>
+
+            <div className="mt-10 grid gap-4 lg:grid-cols-3">
+              {DOWNLOAD_BUNDLES.map((bundle) => (
+                <Card
+                  key={bundle.os}
+                  className="gap-3 rounded-2xl border-[#2a2e3f] bg-[#1a1d29] px-5 py-5"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <span className="grid size-9 shrink-0 place-items-center rounded-xl border border-[#8b5cf6]/30 bg-[#8b5cf6]/10 text-[#a78bfa]">
+                      <bundle.icon className="size-4" aria-hidden="true" />
+                    </span>
+                    <CardTitle className="text-base text-[#e5e7eb]">{bundle.os}</CardTitle>
+                  </div>
+                  <CardContent className="flex flex-col gap-2 px-0">
+                    {bundle.files.map((file) => (
+                      <a
+                        key={file.href}
+                        href={file.href}
+                        className="flex items-center justify-between gap-2 rounded-lg border border-[#2a2e3f] bg-[#0b0d13] px-3 py-2 text-sm text-[#e5e7eb] transition-colors hover:border-[#8b5cf6]/50 hover:bg-[#232738]"
+                      >
+                        <span>{file.label}</span>
+                        <HardDriveDownload
+                          className="size-4 shrink-0 text-[#a78bfa]"
+                          aria-hidden="true"
+                        />
+                      </a>
+                    ))}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            <p className="mt-6 rounded-2xl border border-[#fbbf24]/30 bg-[#fbbf24]/5 px-5 py-4 text-sm leading-6 text-[#fbbf24]">
+              ⚠️ Early-release software that writes to raw devices — double-check the target drive.
+              Binaries are unsigned: SmartScreen / Gatekeeper will warn on first run (macOS:
+              right-click → Open).
+            </p>
+            <p className="mt-3 text-sm text-[#9ca3af]">
+              Full release notes on GitHub:{" "}
+              <a
+                href={RELEASE_URL}
+                className="text-[#a78bfa] underline-offset-4 hover:underline"
+                rel="noopener noreferrer"
+              >
+                release v0.1.0
+              </a>{" "}
+              ·{" "}
+              <a
+                href={RELEASES_URL}
+                className="text-[#a78bfa] underline-offset-4 hover:underline"
+                rel="noopener noreferrer"
+              >
+                all releases
+              </a>
+            </p>
+          </div>
+        </section>
+
+        <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
+          <Separator className="bg-[#2a2e3f]" />
+        </div>
+
         {/* ---------------------------------------------- compare */}
         <section id="compare" className="py-16 sm:py-20" aria-labelledby="compare-title">
           <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
@@ -699,6 +933,73 @@ export default function Home() {
                 cargo test &amp;&amp; time ./app --flash ...
               </code>
             </p>
+          </div>
+        </section>
+
+        <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
+          <Separator className="bg-[#2a2e3f]" />
+        </div>
+
+        {/* ------------------------------------------ verification */}
+        <section id="verification" className="py-16 sm:py-20" aria-labelledby="verification-title">
+          <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
+            <SectionHeading kicker="Verification status" title="Tested where it's tested">
+              <p>
+                Honesty about what is actually hardware-tested is part of this project&apos;s ethos.
+                Release binaries are unsigned; signing and notarization are planned once
+                distribution becomes serious.
+              </p>
+            </SectionHeading>
+
+            <Card className="mt-10 overflow-hidden rounded-2xl border-[#2a2e3f] bg-[#1a1d29] p-0 py-0">
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[560px] border-collapse text-left text-sm">
+                  <caption className="sr-only">
+                    Platform verification status: CI coverage vs. real hardware testing
+                  </caption>
+                  <thead>
+                    <tr className="border-b border-[#2a2e3f]">
+                      {["Platform", "Compiles (CI)", "Real flash + boot test"].map((head) => (
+                        <th
+                          key={head}
+                          scope="col"
+                          className="px-5 py-4 text-xs font-semibold uppercase tracking-wider text-[#9ca3af]"
+                        >
+                          {head}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {VERIFICATION_ROWS.map((row) => (
+                      <tr key={row.platform} className="border-b border-[#2a2e3f] last:border-b-0">
+                        <th
+                          scope="row"
+                          className="px-5 py-4 align-top font-medium text-[#e5e7eb]"
+                        >
+                          {row.platform}
+                        </th>
+                        <td className="px-5 py-4 align-top text-[#9ca3af]">{row.ci}</td>
+                        <td
+                          className={`px-5 py-4 align-top ${
+                            row.tested ? "text-[#34d399]" : "text-[#fbbf24]"
+                          }`}
+                        >
+                          <span className="flex items-start gap-2">
+                            {row.tested ? (
+                              <CircleCheck className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+                            ) : (
+                              <CircleDashed className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+                            )}
+                            <span>{row.hardware}</span>
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </Card>
           </div>
         </section>
 
@@ -832,8 +1133,8 @@ export default function Home() {
           <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
             <SectionHeading kicker="Build it yourself" title="Local-only, from source">
               <p>
-                No app store, no installer download, no account. Get the source locally from the
-                owner and build the desktop app on your own machine.
+                Prefer to run it from source? No app store, no account. Clone the repository and
+                build the desktop app on your own machine with pnpm and cargo.
               </p>
             </SectionHeading>
 
@@ -926,16 +1227,40 @@ export default function Home() {
         >
           <p className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-center gap-2 px-4 font-mono text-xs text-[#9ca3af] sm:px-6">
             <WifiOff className="size-3.5 text-[#34d399]" aria-hidden="true" />
-            v0.1.0-alpha · MIT (c) 2025 marrionesa · local-only by design
+            v0.1.0 · MIT (c) 2026 marrionesa · 100% local — no telemetry, no cloud
           </p>
         </section>
       </main>
 
       {/* ------------------------------------------------ footer */}
       <footer className="mt-auto border-t border-[#2a2e3f] bg-[#0f1117]">
-        <div className="mx-auto flex w-full max-w-6xl items-center justify-center gap-2 px-4 py-6 sm:px-6">
-          <MiniWisp className="h-5 w-5" />
-          <p className="text-sm text-[#9ca3af]">animabooter v0.1 · made by @marrionesa</p>
+        <div className="mx-auto flex w-full max-w-6xl flex-col items-center gap-3 px-4 py-8 sm:px-6">
+          <div className="flex items-center gap-2">
+            <MiniWisp className="h-5 w-5" />
+            <p className="text-sm text-[#9ca3af]">animabooter v0.1.0 · made by @marrionesa</p>
+          </div>
+          <nav aria-label="Footer">
+            <ul className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-sm">
+              {[
+                { href: GITHUB_REPO, label: "GitHub" },
+                { href: RELEASES_URL, label: "Releases" },
+                { href: `${GITHUB_REPO}/blob/main/CHANGELOG.md`, label: "Changelog" },
+                { href: `${GITHUB_REPO}/blob/main/CONTRIBUTING.md`, label: "Contributing" },
+                { href: `${GITHUB_REPO}/blob/main/SECURITY.md`, label: "Security" },
+                { href: `${GITHUB_REPO}/blob/main/LICENSE`, label: "MIT License" },
+              ].map((link) => (
+                <li key={link.href}>
+                  <a
+                    href={link.href}
+                    rel="noopener noreferrer"
+                    className="text-[#9ca3af] transition-colors hover:text-[#e5e7eb]"
+                  >
+                    {link.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
         </div>
       </footer>
     </div>

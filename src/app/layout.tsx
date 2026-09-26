@@ -15,23 +15,35 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "AnimaBooter — Flash USB drives with soul",
-  description: "Modern Next.js scaffold optimized for AI-powered development with Z.ai. Built with TypeScript, Tailwind CSS, and shadcn/ui.",
-  keywords: ["Z.ai", "Next.js", "TypeScript", "Tailwind CSS", "shadcn/ui", "AI development", "React"],
-  authors: [{ name: "Z.ai Team" }],
+  description:
+    "A tiny, honest, open-source, cross-platform USB image flasher: parallel 3-stage flash pipeline with free verification hashing. Rust + Tauri 2 + Svelte 5. 100% local — no telemetry, no cloud.",
+  keywords: [
+    "AnimaBooter",
+    "USB flasher",
+    "disk imager",
+    "bootable USB",
+    "Rust",
+    "Tauri",
+    "Svelte",
+    "open source",
+  ],
+  authors: [{ name: "marrionesa" }],
   icons: {
-    icon: "https://z-cdn.chatglm.cn/z-ai/static/logo.svg",
+    icon: "/icon.png",
   },
   openGraph: {
-    title: "Z.ai Code Scaffold",
-    description: "AI-powered development with modern React stack",
-    url: "https://chat.z.ai",
-    siteName: "Z.ai",
+    title: "AnimaBooter — Flash USB drives with soul",
+    description:
+      "Open-source cross-platform USB image flasher with a parallel 3-stage pipeline and free verification hashing.",
+    url: "https://github.com/marrionesa/animabooter",
+    siteName: "AnimaBooter",
     type: "website",
   },
   twitter: {
-    card: "summary_large_image",
-    title: "Z.ai Code Scaffold",
-    description: "AI-powered development with modern React stack",
+    card: "summary",
+    title: "AnimaBooter — Flash USB drives with soul",
+    description:
+      "Open-source cross-platform USB image flasher. Rust + Tauri 2 + Svelte 5. 100% local, no telemetry.",
   },
 };
 
